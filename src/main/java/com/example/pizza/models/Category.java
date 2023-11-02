@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +27,9 @@ public class Category implements Serializable {
 
     @UpdateTimestamp
     private Instant updated_at;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Product> product;
 
     public UUID getId() {
         return id;
