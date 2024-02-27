@@ -28,9 +28,6 @@ public class Category implements Serializable {
     @UpdateTimestamp
     private Instant updated_at;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private Set<Product> product;
-
     public UUID getId() {
         return id;
     }

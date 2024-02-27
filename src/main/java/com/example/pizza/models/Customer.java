@@ -6,13 +6,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product")
-public class Product implements Serializable {
+@Table(name = "customer")
+public class Customer implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -20,23 +19,17 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String title;
+    private String name;
+    
+    private String email;
 
-    private String image;
-
-    private String description;
-
-    private BigDecimal value;
+    private String password;
 
     @CreationTimestamp
     private Instant created_at;
 
     @UpdateTimestamp
     private Instant updated_at;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
 
     public UUID getId() {
         return id;
@@ -46,36 +39,28 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getImage() {
-        return image;
+    public String getEmail() {
+        return email;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPassword() {
+        return password;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getValue() {
-        return value;
-    }
-
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Instant getCreated_at() {
@@ -92,13 +77,5 @@ public class Product implements Serializable {
 
     public void setUpdated_at(Instant updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 }

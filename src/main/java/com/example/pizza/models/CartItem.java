@@ -1,5 +1,7 @@
 package com.example.pizza.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,22 +13,27 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product")
-public class Product implements Serializable {
+@Table(name = "cart_item")
+public class CartItem implements Serializable {
     @Serial
-    private static final long serialVersionUID = 1L;
+    private final static long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String title;
-
-    private String image;
-
-    private String description;
+    private String name;
 
     private BigDecimal value;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    @JsonBackReference
+    private Cart cart;
 
     @CreationTimestamp
     private Instant created_at;
@@ -34,9 +41,13 @@ public class Product implements Serializable {
     @UpdateTimestamp
     private Instant updated_at;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
     public UUID getId() {
         return id;
@@ -46,28 +57,12 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BigDecimal getValue() {
@@ -76,6 +71,14 @@ public class Product implements Serializable {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public Instant getCreated_at() {
@@ -92,13 +95,5 @@ public class Product implements Serializable {
 
     public void setUpdated_at(Instant updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 }
