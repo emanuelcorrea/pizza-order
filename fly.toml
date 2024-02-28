@@ -1,0 +1,12 @@
+# fly.toml app configuration file generated for pizzify on 2024-02-28T01:30:52-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'pizzify'
+primary_region = 'gru'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
