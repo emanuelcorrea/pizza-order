@@ -25,13 +25,13 @@ jobs:
       - name: Push image docker
         run: docker push emanuelcorrea/pizzify
 
-#  deploy:
-#    needs: build
-#    runs-on: self-hosted
-#    steps:
-#      - name: Pull image from docker hub
-#        run: docker pull emanuelcorrea/pizza-0.0.1-SNAPSHOT:latest
-#      - name: Remove docker container
-#        run: docker rm -f deploy_ghactions
-#      - name: Run docker container
-#        run: docker run -d -p 8080:8080 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name deploy_ghactions danieleleaoe/deploy_ghactions
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull emanuelcorrea/pizzify:latest
+      - name: Remove docker container
+        run: docker rm -f pizzify
+      - name: Run docker container
+        run: docker run -d -p 8080:8080 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
