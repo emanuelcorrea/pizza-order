@@ -34,4 +34,4 @@ jobs:
       - name: Remove docker container
         run: docker rm -f pizzify
       - name: Run docker container
-        run: docker run -d -P -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
+        run: docker run -d -p 80:80 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
