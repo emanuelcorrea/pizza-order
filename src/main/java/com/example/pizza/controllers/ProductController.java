@@ -5,6 +5,7 @@ import com.example.pizza.models.Category;
 import com.example.pizza.models.Product;
 import com.example.pizza.repositories.CategoryRepository;
 import com.example.pizza.repositories.ProductRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping(value = "/products", produces = "application/json")
+@Tag(name = "Products", description = "Products")
 public class ProductController {
     @Autowired
     ProductRepository productRepository;

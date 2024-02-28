@@ -8,6 +8,10 @@ import com.example.pizza.repositories.CartRepository;
 import com.example.pizza.repositories.ProductRepository;
 import com.example.pizza.services.CartItemService;
 import com.example.pizza.services.CartService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
+@Tag(name = "Cart Items", description = "Cart Items")
 @RequestMapping("/cart-items")
 public class CartItemController {
 
@@ -29,11 +34,19 @@ public class CartItemController {
         this.cartItemService = cartItemService;
     }
 
+    @Operation(summary = "Retrieves a list of cart items", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully")
+    })
     @GetMapping
     public ResponseEntity<List<CartItem>> findAll() {
         return ResponseEntity.ok(cartItemService.findAll());
     }
 
+    @Operation(summary = "Creates a cart item", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully")
+    })
     @PostMapping("/{id}")
     @Transactional
     public ResponseEntity<Object> create(@PathVariable String id, @RequestBody List<Product> records) {
