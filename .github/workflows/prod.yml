@@ -47,7 +47,6 @@ jobs:
 
       - name: Setup GIT Config
         run: |
-          git config --unset-all http.https://github.com/.extraheader
           git config --global user.name "Emanuel Correa"
           git config --global user.email emanueldascorrea@gmail.com
 
@@ -55,6 +54,5 @@ jobs:
         run: |
           git remote add target_repo https://github.com/emanuelcorrea/pizzify-docs.git
           git push target_repo HEAD:master --force-with-lease
-      - uses: actions/labeler@v4
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          TARGET_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}}
