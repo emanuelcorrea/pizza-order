@@ -20,29 +20,33 @@ import java.util.List;
 @RequestMapping("/categories")
 @Tag(name = "Categories", description = "categories")
 public class CategoryController {
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    CategoryRepository categoryRepository;
+    public CategoryController(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
-    @Operation(summary = "Retrieves a list of categories", method = "GET")
+    @Operation(summary = "Retrieve a list of categories", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of categories")
     })
     @GetMapping
     public ResponseEntity<List<Category>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryRepository.findAll());
+        List<Category> categories = categoryRepository.findAll();
+        return ResponseEntity.ok(categories);
     }
 
-    @Operation(summary = "Creates a category", method = "POST")
+    @Operation(summary = "Create a category", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "201", description = "Successfully created a new category"),
+            @ApiResponse(responseCode = "400", description = "Bad request - Invalid category data")
     })
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody @Valid CategoryDto categoryRecord) {
         Category category = new Category();
-
         BeanUtils.copyProperties(categoryRecord, category);
 
-        return ResponseEntity.status(HttpStatus.OK).body(categoryRepository.save(category));
+        Category savedCategory = categoryRepository.save(category);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 }

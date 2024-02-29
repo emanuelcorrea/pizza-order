@@ -28,20 +28,20 @@ public class CustomerController {
         this.customerRepository = customerRepository;
     }
 
-    @Operation(summary = "Retrieves a list of customers", method = "GET")
+    @Operation(summary = "Retrieve a list of customers", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of customers")
     })
     @GetMapping
     public ResponseEntity<List<Customer>> findAll() {
         List<Customer> customerList = customerRepository.findAll();
-
-        return ResponseEntity.status(HttpStatus.OK).body(customerList);
+        return ResponseEntity.ok(customerList);
     }
 
-    @Operation(summary = "Retrieves a single customer", method = "GET")
+    @Operation(summary = "Retrieve a single customer by ID", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the customer"),
+            @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @GetMapping("/{id}")
     public ResponseEntity<Customer> find(@PathVariable String id) {
@@ -50,22 +50,23 @@ public class CustomerController {
         return optionalCustomer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Creates a customer", method = "POST")
+    @Operation(summary = "Create a new customer", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "201", description = "Successfully created a new customer"),
+            @ApiResponse(responseCode = "400", description = "Bad request - Invalid customer data")
     })
     @PostMapping
     public ResponseEntity<Customer> create(@RequestBody @Valid CustomerDto customerRecord) {
         Customer customer = new Customer();
-
         BeanUtils.copyProperties(customerRecord, customer);
 
         return ResponseEntity.ok(customerRepository.save(customer));
     }
 
-    @Operation(summary = "Deletes a customer", method = "DELETE")
+    @Operation(summary = "Delete a customer by ID", method = "DELETE")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "204", description = "Successfully deleted the customer"),
+            @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {

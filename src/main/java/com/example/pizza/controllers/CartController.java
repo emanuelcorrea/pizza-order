@@ -27,12 +27,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/carts", produces = "application/json")
-@Tag(name = "Carts", description = "Carts")
+@Tag(name = "Carts", description = "Operations related to Carts")
 public class CartController {
     private final CartService cartService;
-
     private final CustomerService customerService;
-
     private final CartItemService cartItemService;
 
     public CartController(CartService cartService, CartItemService cartItemService, CustomerService customerService) {
@@ -41,43 +39,50 @@ public class CartController {
         this.customerService = customerService;
     }
 
-    @Operation(summary = "Retrieves a list of carts", method = "GET")
+    @Operation(summary = "Retrieve a list of carts", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of carts"),
     })
     @GetMapping
     public ResponseEntity<List<Cart>> findAll() {
         return ResponseEntity.ok(cartService.findAll());
     }
 
-    @Operation(summary = "Retrieves a single cart", method = "GET")
+    @Operation(summary = "Retrieve a single cart by ID", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the cart"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @GetMapping("/{id}")
     public ResponseEntity<Cart> findOne(@PathVariable String id) {
         UUID cartId = UUID.fromString(id);
 
-        return cartService.findOne(cartId).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return cartService.findOne(cartId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Deletes a cart", method = "DELETE")
+    @Operation(summary = "Delete a cart by ID", method = "DELETE")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "204", description = "Successfully deleted the cart"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> remove(@PathVariable String id) {
         UUID cartId = UUID.fromString(id);
 
-        return cartService.findOne(cartId).map(cart -> {
-            cartService.remove(cartId);
-            return ResponseEntity.noContent().build();
-        }).orElseGet(() -> ResponseEntity.notFound().build());
+        return cartService.findOne(cartId)
+                .map(cart -> {
+                    cartService.remove(cartId);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Creates a cart", method = "POST")
+    @Operation(summary = "Create a new cart", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "201", description = "Successfully created a new cart"),
+            @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @PostMapping
     @Transactional
@@ -85,30 +90,30 @@ public class CartController {
         return customerService.findOne(record.customer_id())
                 .map(customer -> {
                     List<Product> products = new ArrayList<>(record.items());
-
                     Cart cart = cartService.create(customer, products);
-
-                    return ResponseEntity.ok(cart);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+                    return ResponseEntity.status(HttpStatus.CREATED).body(cart);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Retrieves a list of items by cart", method = "GET")
+    @Operation(summary = "Retrieve a list of items by cart ID", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of items"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
     })
     @GetMapping("/{id}/items")
     public ResponseEntity<List<CartItem>> findAllItems(@PathVariable String id) {
         return cartService.findOne(UUID.fromString(id))
-                .map(cart -> {
-                List<CartItem> cartItems = cart.getItems();
-
-                return ResponseEntity.ok(cartItems);
-            }).orElseGet(() -> ResponseEntity.notFound().build());
+                .map(cart -> ResponseEntity.ok(cart.getItems()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Creates a list of items by cart", method = "POST")
+    @Operation(summary = "Create a list of items for a cart", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "201", description = "Successfully created items for the cart"),
+            @ApiResponse(responseCode = "400", description = "Bad request - No items to insert in cart"),
+            @ApiResponse(responseCode = "404", description = "Cart not found"),
+            @ApiResponse(responseCode = "404", description = "Products not found")
     })
     @PostMapping("/{id}/items")
     @Transactional
@@ -125,10 +130,9 @@ public class CartController {
             }
 
             Cart cart = optionalCart.get();
-
             List<CartItem> cartItems = cartItemService.create(products, cart);
 
-            return ResponseEntity.ok(cartItems);
+            return ResponseEntity.status(HttpStatus.CREATED).body(cartItems);
         } catch (ProductsNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
         }

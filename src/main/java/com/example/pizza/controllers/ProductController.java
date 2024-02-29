@@ -33,23 +33,24 @@ public class ProductController {
         this.productRepository = productRepository;
     }
 
-    @Operation(summary = "Retrieves a list of products", method = "GET")
+    @Operation(summary = "Retrieve a list of products", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of products")
     })
     @GetMapping
     public ResponseEntity<List<Product>> findAll() {
         return ResponseEntity.ok(productRepository.findAll());
     }
 
-    @Operation(summary = "Creates a product", method = "POST")
+    @Operation(summary = "Create a product", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "201", description = "Successfully created a new product"),
+            @ApiResponse(responseCode = "400", description = "Bad request - Invalid product data"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
     })
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody @Valid ProductDto productRecord) {
         Product product = new Product();
-
         BeanUtils.copyProperties(productRecord, product);
 
         UUID categoryId = UUID.fromString(productRecord.category_id());
@@ -67,9 +68,11 @@ public class ProductController {
         return ResponseEntity.ok(productRepository.save(product));
     }
 
-    @Operation(summary = "Updates a product", method = "PUT")
+    @Operation(summary = "Update a product by ID", method = "PUT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully")
+            @ApiResponse(responseCode = "200", description = "Successfully updated the product"),
+            @ApiResponse(responseCode = "400", description = "Bad request - Invalid product data"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid ProductDto productRecord) {
@@ -80,14 +83,9 @@ public class ProductController {
         }
 
         Product product = optionalProduct.get();
-        Product newProduct = new Product();
+        BeanUtils.copyProperties(productRecord, product);
 
-        BeanUtils.copyProperties(productRecord, newProduct);
-
-        product.setTitle(newProduct.getTitle());
-        product.setDescription(newProduct.getDescription());
-        product.setImage(newProduct.getImage());
-
-        return ResponseEntity.ok(productRepository.save(product));
+        Product updatedProduct = productRepository.save(product);
+        return ResponseEntity.ok(updatedProduct);
     }
 }
