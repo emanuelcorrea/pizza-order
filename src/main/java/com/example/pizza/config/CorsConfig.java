@@ -11,9 +11,6 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("https://api.pizzify.emanuelcorrea.dev")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept");
+        registry.addMapping("/**").allowedMethods("*").allowedHeaders("*");
     }
 }
