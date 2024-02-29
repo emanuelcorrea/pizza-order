@@ -35,3 +35,26 @@ jobs:
         run: docker rm -f pizzify
       - name: Run docker container
         run: docker run -d -p 443:443 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
+
+  docs:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get Current Version
+        id: get_version
+        run: echo "::set-output name=version::$(git describe --abbrev=0 --tags)"
+
+      - name: Increment Version
+        id: increment_version
+        run: echo "::set-output name=version::v$((($(echo "${{ steps.get_version.outputs.version }}" | cut -c 2-))+1)).0"
+
+      - name: Create and Push New Tag
+        run: |
+          git remote add target_repo https://github.com/emanuelcorrea/pizzify-docs.git
+          git config --local user.email "emanueldascorrea@gmail.com"
+          git config --local user.name "Emanuel Correa"
+          git tag -a "${{ steps.increment_version.outputs.version }}" -m "Version ${{ steps.increment_version.outputs.version }}"
+          git push target_repo "${{ steps.increment_version.outputs.version }}"
