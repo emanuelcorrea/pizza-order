@@ -5,54 +5,33 @@ on:
     branches: [master]
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Setup Java
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '17'
-#      - name: Build project
-#        run: mvn clean install -DskipTests
-#      - name: Login Docker Hub
-#        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-#      - name: Build docker image
-#        run: docker build -t emanuelcorrea/pizzify .
-#      - name: Push image docker
-#        run: docker push emanuelcorrea/pizzify
-#
-#  deploy:
-#    needs: build
-#    runs-on: self-hosted
-#    steps:
-#      - name: Pull image from docker hub
-#        run: docker pull emanuelcorrea/pizzify:latest
-#      - name: Remove docker container
-#        run: docker rm -f pizzify
-#      - name: Run docker container
-#        run: docker run -d -p 443:443 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
-
-  docs:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup GIT Config
-        run: |
-          git config --global user.name "Emanuel Correa"
-          git config --global user.email emanueldascorrea@gmail.com
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build project
+        run: mvn clean install -DskipTests
+      - name: Login Docker Hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build docker image
+        run: docker build -t emanuelcorrea/pizzify .
+      - name: Push image docker
+        run: docker push emanuelcorrea/pizzify
 
-      - name: Create and Push New Tag
-        run: |
-          git remote add target_repo https://github.com/emanuelcorrea/pizzify-docs.git
-          git push target_repo HEAD:master --force-with-lease
-        env:
-          TARGET_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN  }}}
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull emanuelcorrea/pizzify:latest
+      - name: Remove docker container
+        run: docker rm -f pizzify
+      - name: Run docker container
+        run: docker run -d -p 443:443 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
