@@ -5,56 +5,44 @@ on:
     branches: [master]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Build project
-        run: mvn clean install -DskipTests
-      - name: Login Docker Hub
-        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-      - name: Build docker image
-        run: docker build -t emanuelcorrea/pizzify .
-      - name: Push image docker
-        run: docker push emanuelcorrea/pizzify
-
-  deploy:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Pull image from docker hub
-        run: docker pull emanuelcorrea/pizzify:latest
-      - name: Remove docker container
-        run: docker rm -f pizzify
-      - name: Run docker container
-        run: docker run -d -p 443:443 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#      - name: Build project
+#        run: mvn clean install -DskipTests
+#      - name: Login Docker Hub
+#        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+#      - name: Build docker image
+#        run: docker build -t emanuelcorrea/pizzify .
+#      - name: Push image docker
+#        run: docker push emanuelcorrea/pizzify
+#
+#  deploy:
+#    needs: build
+#    runs-on: self-hosted
+#    steps:
+#      - name: Pull image from docker hub
+#        run: docker pull emanuelcorrea/pizzify:latest
+#      - name: Remove docker container
+#        run: docker rm -f pizzify
+#      - name: Run docker container
+#        run: docker run -d -p 443:443 -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_URL=${{secrets.DATABASE_URL}} --name pizzify emanuelcorrea/pizzify
 
   docs:
-    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Get Current Version
-        id: get_version
-        run: echo "::set-output name=version::$(git describe --abbrev=0 --tags)"
-
-      - name: Increment Version
-        id: increment_version
-        run: echo "::set-output name=version::v$((($(echo "${{ steps.get_version.outputs.version }}" | cut -c 2-))+1)).0"
-
       - name: Create and Push New Tag
         run: |
           git remote add target_repo https://github.com/emanuelcorrea/pizzify-docs.git
-          git config --local user.email "emanueldascorrea@gmail.com"
-          git config --local user.name "Emanuel Correa"
-          git tag -a "${{ steps.increment_version.outputs.version }}" -m "Version ${{ steps.increment_version.outputs.version }}"
-          git push target_repo "${{ steps.increment_version.outputs.version }}"
+          git push target_repo HEAD:master --force-with-lease
