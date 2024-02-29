@@ -5,6 +5,9 @@ import com.example.pizza.models.Category;
 import com.example.pizza.models.Product;
 import com.example.pizza.repositories.CategoryRepository;
 import com.example.pizza.repositories.ProductRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -22,17 +25,27 @@ import java.util.UUID;
 @RequestMapping(value = "/products", produces = "application/json")
 @Tag(name = "Products", description = "Products")
 public class ProductController {
-    @Autowired
-    ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    CategoryRepository categoryRepository;
+    public ProductController(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+    }
 
+    @Operation(summary = "Retrieves a list of products", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully")
+    })
     @GetMapping
     public ResponseEntity<List<Product>> findAll() {
         return ResponseEntity.ok(productRepository.findAll());
     }
 
+    @Operation(summary = "Creates a product", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully")
+    })
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody @Valid ProductDto productRecord) {
         Product product = new Product();
@@ -54,6 +67,10 @@ public class ProductController {
         return ResponseEntity.ok(productRepository.save(product));
     }
 
+    @Operation(summary = "Updates a product", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid ProductDto productRecord) {
         Optional<Product> optionalProduct = productRepository.findById(UUID.fromString(id));
@@ -73,5 +90,4 @@ public class ProductController {
 
         return ResponseEntity.ok(productRepository.save(product));
     }
-
 }
