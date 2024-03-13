@@ -1,7 +1,7 @@
 package com.example.pizza.controllers;
 
 import com.example.pizza.dtos.CartDto;
-import com.example.pizza.exceptions.ProductsNotFoundException;
+import com.example.pizza.exceptions.product.ProductsNotFoundException;
 import com.example.pizza.models.Cart;
 import com.example.pizza.models.CartItem;
 import com.example.pizza.models.Product;
@@ -85,7 +85,6 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @PostMapping
-    @Transactional
     public ResponseEntity<Cart> create(@RequestBody @Valid @NotNull CartDto record) {
         return customerService.findOne(record.customer_id())
                 .map(customer -> {

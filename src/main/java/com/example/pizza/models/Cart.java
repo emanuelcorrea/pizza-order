@@ -1,5 +1,6 @@
 package com.example.pizza.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
@@ -23,7 +24,7 @@ public class Cart implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     @JsonManagedReference
     private List<CartItem> items = new ArrayList<CartItem>();
@@ -32,11 +33,13 @@ public class Cart implements Serializable {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     @CreationTimestamp
     private Instant created_at;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     @UpdateTimestamp
-    private Instant updated_at;
+    private Instant  updated_at;
 
     public Customer getCustomer() {
         return customer;
@@ -62,7 +65,7 @@ public class Cart implements Serializable {
         this.items = items;
     }
 
-    public Instant getCreated_at() {
+    public Instant  getCreated_at() {
         return created_at;
     }
 

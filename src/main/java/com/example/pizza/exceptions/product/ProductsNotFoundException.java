@@ -1,4 +1,4 @@
-package com.example.pizza.exceptions;
+package com.example.pizza.exceptions.product;
 
 import org.hibernate.mapping.Join;
 

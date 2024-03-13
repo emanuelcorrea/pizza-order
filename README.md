@@ -1,4 +1,4 @@
-<p align="center">
+RockFoFo<p align="center">
   <p align="center"><img width="258" height="55" src="https://i.imgur.com/ksRkRFo.png" alt="logo"><p>
 
    <h2 align="center">Pizzify</h2>
@@ -15,23 +15,30 @@
 6. [Contributing](#contributing)
 7. [License](#license--copyright)
 
+## External Links
+
+- 📄 [Pizzify Docs: https://docs.pizzify.emanuelcorrea.dev/docs/api](https://docs.pizzify.emanuelcorrea.dev/docs/api)
+- 🚀 [Pizzify (API Endpoint) Backend: https://api.pizzify.emanuelcorrea.dev ](https://api.pizzify.emanuelcorrea.dev)
+- 💎 [Postman Collection: https://documenter.getpostman.com/view/14677746/2sA2xh3t1M](https://documenter.getpostman.com/view/14677746/2sA2xh3t1M)
+- 💻 [Pizzify Frontend: https://pizzify.emanuelcorrea.dev](https://pizzify.emanuelcorrea.dev)
+
 ## Introduction
 
 **Pizzify Backend Technical Overview**
 
 Pizzify's backend, built with Java and Spring Boot, facilitates online pizza orders and manages crucial entities like Customers, Orders, Pizzas, Categories, and the Cart. Key features include:
 
-- **Customers:** User profiles for login, order tracking, and preferences.
+- **👧 Customers:** User profiles for login, order tracking, and preferences.
 
-- **Orders:** Central entity recording order details, customer information, and order history.
+- **📃 Orders:** Central entity recording order details, customer information, and order history.
 
-- **Pizzas:** Independent entities with attributes like flavor, size, ingredients, and price.
+- **🍕 Pizzas:** Independent entities with attributes like flavor, size, ingredients, and price.
 
-- **Categories:** Organizes pizzas logically for a user-friendly online menu.
+- **📦 Categories:** Organizes pizzas logically for a user-friendly online menu.
 
-- **Cart:** Allows customers to add pizzas, providing an intuitive shopping experience.
+- **🛒 Cart:** Allows customers to add pizzas, providing an intuitive shopping experience.
 
-The backend employs a relational database with Hibernate for efficient data management. RESTful endpoints enable interaction with the frontend, and security measures include authentication and authorization. The modular, scalable architecture supports easy expansion and integration, laying a robust foundation for the entire Pizzify ecosystem.
+The backend employs a relational database with Hibernate for efficient data management. **RESTful** endpoints enable interaction with the frontend, and security measures include authentication and authorization. The modular, scalable architecture supports easy expansion and integration, laying a robust foundation for the entire Pizzify ecosystem.
 
 
 ## Prerequisites

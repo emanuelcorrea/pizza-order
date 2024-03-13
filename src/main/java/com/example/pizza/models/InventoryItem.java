@@ -1,40 +1,40 @@
 package com.example.pizza.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.example.pizza.enums.ProductInventory.ProductInventoryAction;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cart_item")
-public class CartItem implements Serializable {
+@Table(name = "inventory_item")
+public class InventoryItem implements Serializable {
     @Serial
-    private final static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String name;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ProductInventoryAction action;
 
-    private BigDecimal value;
+    @Column
+    private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "inventory_id", nullable = false)
+    private Inventory inventory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    @JsonBackReference
-    private Cart cart;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     @CreationTimestamp
@@ -44,14 +44,6 @@ public class CartItem implements Serializable {
     @UpdateTimestamp
     private Instant updated_at;
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
     public UUID getId() {
         return id;
     }
@@ -60,20 +52,28 @@ public class CartItem implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public ProductInventoryAction getAction() {
+        return action;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAction(ProductInventoryAction action) {
+        this.action = action;
     }
 
-    public BigDecimal getValue() {
-        return value;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
     public Product getProduct() {
