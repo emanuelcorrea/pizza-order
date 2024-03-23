@@ -1,7 +1,7 @@
 package com.example.pizza.controllers;
 
 import com.example.pizza.dtos.CartDto;
-import com.example.pizza.exceptions.ProductsNotFoundException;
+import com.example.pizza.exceptions.product.ProductsNotFoundException;
 import com.example.pizza.models.Cart;
 import com.example.pizza.models.CartItem;
 import com.example.pizza.models.Product;
@@ -85,7 +85,6 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @PostMapping
-    @Transactional
     public ResponseEntity<Cart> create(@RequestBody @Valid @NotNull CartDto record) {
         return customerService.findOne(record.customer_id())
                 .map(customer -> {
@@ -118,23 +117,17 @@ public class CartController {
     @PostMapping("/{id}/items")
     @Transactional
     public ResponseEntity<Object> createItem(@PathVariable String id, @RequestBody List<Product> products) {
-        try {
-            Optional<Cart> optionalCart = cartService.findOne(UUID.fromString(id));
+        Optional<Cart> optionalCart = cartService.findOne(UUID.fromString(id));
 
-            if (optionalCart.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+        if (optionalCart.isEmpty())
+            return ResponseEntity.notFound().build();
 
-            if (products.isEmpty()) {
-                return ResponseEntity.badRequest().body("No available items to insert in cart");
-            }
+        if (products.isEmpty())
+            return ResponseEntity.badRequest().body("No available items to insert in cart");
 
-            Cart cart = optionalCart.get();
-            List<CartItem> cartItems = cartItemService.create(products, cart);
+        Cart cart = optionalCart.get();
+        List<CartItem> cartItems = cartItemService.create(products, cart);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(cartItems);
-        } catch (ProductsNotFoundException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(cartItems);
     }
 }
