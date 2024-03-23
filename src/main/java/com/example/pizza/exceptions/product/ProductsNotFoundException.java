@@ -1,12 +1,17 @@
 package com.example.pizza.exceptions.product;
 
-import org.hibernate.mapping.Join;
+import com.example.pizza.interfaces.CustomException;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ProductsNotFoundException extends RuntimeException {
+@Getter
+public class ProductsNotFoundException extends RuntimeException implements CustomException {
+    private final HttpStatus status = HttpStatus.NOT_FOUND;
+
     private final Set<UUID> missingProducts;
 
     public ProductsNotFoundException(Set<UUID> missingProducts) {
@@ -14,14 +19,6 @@ public class ProductsNotFoundException extends RuntimeException {
                 .map(String::valueOf)
                 .collect(Collectors.joining(", ")));
 
-        System.out.println( missingProducts.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", ")));
-
         this.missingProducts = missingProducts;
-    }
-
-    public Set<UUID> getMissingProducts() {
-        return missingProducts;
     }
 }
