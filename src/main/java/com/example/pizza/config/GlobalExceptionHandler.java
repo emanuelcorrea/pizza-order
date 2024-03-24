@@ -2,6 +2,7 @@ package com.example.pizza.config;
 
 import com.example.pizza.exceptions.ExceptionResponse;
 import com.example.pizza.exceptions.category.CategoryNotFoundException;
+import com.example.pizza.exceptions.product.ProductNotFoundException;
 import com.example.pizza.exceptions.product.ProductsNotFoundException;
 import com.example.pizza.interfaces.CustomException;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    private ResponseEntity<ExceptionResponse> productNotFound(ProductNotFoundException exception) {
+        return this.buildResponse(exception);
+    }
 
     @ExceptionHandler(ProductsNotFoundException.class)
     private ResponseEntity<ExceptionResponse> productsNotFound(ProductsNotFoundException exception) {
