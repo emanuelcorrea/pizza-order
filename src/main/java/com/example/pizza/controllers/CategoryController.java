@@ -43,9 +43,9 @@ public class CategoryController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<Category> findOne(@PathVariable String id) {
-        Optional<Category> optionalCategory = categoryService.findOne(id);
+        Category category = categoryService.findOne(id);
 
-        return optionalCategory.map(ResponseEntity::ok).orElseThrow(() -> new CategoryNotFoundException(UUID.fromString(id)));
+        return ResponseEntity.ok(category);
     }
 
     @Operation(summary = "Create a category", method = "POST")

@@ -19,8 +19,13 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Optional<Category> findOne(String id) {
-        return categoryRepository.findById(UUID.fromString(id));
+    public Category findOne(String id) {
+        Optional<Category> optionalCategory = categoryRepository.findById(UUID.fromString(id));
+
+        if (optionalCategory.isEmpty())
+            throw new CategoryNotFoundException(UUID.fromString(id));
+
+        return optionalCategory.get();
     }
 
     public List<Category> findAll() {
@@ -35,21 +40,14 @@ public class CategoryService {
     }
 
     public void delete(String id) {
-        Optional<Category> optionalCategory = findOne(id);
+        Category category = findOne(id);
 
-        if (optionalCategory.isEmpty())
-            throw new CategoryNotFoundException(UUID.fromString(id));
-
-        categoryRepository.deleteById(UUID.fromString(id));
+        categoryRepository.deleteById(category.getId());
     }
 
     public Category update(String id, CategoryDto categoryRecord) {
-        Optional<Category> optionalCategory = findOne(id);
+        Category category = findOne(id);
 
-        if (optionalCategory.isEmpty())
-            throw new CategoryNotFoundException(UUID.fromString(id));
-
-        Category category = optionalCategory.get();
         BeanUtils.copyProperties(categoryRecord, category);
 
         return categoryRepository.save(category);
