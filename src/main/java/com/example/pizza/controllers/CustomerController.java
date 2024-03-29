@@ -3,6 +3,7 @@ package com.example.pizza.controllers;
 import com.example.pizza.dtos.CustomerDto;
 import com.example.pizza.models.Customer;
 import com.example.pizza.repositories.CustomerRepository;
+import com.example.pizza.services.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,10 +23,10 @@ import java.util.UUID;
 @Tag(name = "Customers", description = "Customers")
 public class CustomerController {
 
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
 
-    public CustomerController(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @Operation(summary = "Retrieve a list of customers", method = "GET")
@@ -34,7 +35,8 @@ public class CustomerController {
     })
     @GetMapping
     public ResponseEntity<List<Customer>> findAll() {
-        List<Customer> customerList = customerRepository.findAll();
+        List<Customer> customerList = customerService.findAll();
+
         return ResponseEntity.ok(customerList);
     }
 
@@ -44,10 +46,10 @@ public class CustomerController {
             @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> find(@PathVariable String id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(UUID.fromString(id));
+    public ResponseEntity<Customer> findOne(@PathVariable String id) {
+        Customer customer = customerService.findOne(id);
 
-        return optionalCustomer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(customer);
     }
 
     @Operation(summary = "Create a new customer", method = "POST")
@@ -57,10 +59,21 @@ public class CustomerController {
     })
     @PostMapping
     public ResponseEntity<Customer> create(@RequestBody @Valid CustomerDto customerRecord) {
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(customerRecord, customer);
+        Customer createdCustomer = customerService.create(customerRecord);
 
-        return ResponseEntity.ok(customerRepository.save(customer));
+        return ResponseEntity.ok(createdCustomer);
+    }
+
+    @Operation(summary = "Update a customer by ID", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the customer"),
+            @ApiResponse(responseCode = "404", description = "Customer not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> update(@PathVariable String id, @RequestBody @Valid CustomerDto customerRecord) {
+        Customer updatedCustomer = customerService.update(id, customerRecord);
+
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     @Operation(summary = "Delete a customer by ID", method = "DELETE")
@@ -70,13 +83,8 @@ public class CustomerController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        UUID customerId = UUID.fromString(id);
+        customerService.delete(id);
 
-        return customerRepository.findById(customerId)
-            .map(customer -> {
-                customerRepository.deleteById(customerId);
-                return ResponseEntity.noContent().<Void>build();
-            })
-            .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.noContent().build();
     }
 }

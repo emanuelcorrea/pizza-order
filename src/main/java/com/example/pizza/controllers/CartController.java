@@ -4,6 +4,7 @@ import com.example.pizza.dtos.CartDto;
 import com.example.pizza.exceptions.product.ProductsNotFoundException;
 import com.example.pizza.models.Cart;
 import com.example.pizza.models.CartItem;
+import com.example.pizza.models.Customer;
 import com.example.pizza.models.Product;
 import com.example.pizza.services.CartItemService;
 import com.example.pizza.services.CartService;
@@ -86,13 +87,12 @@ public class CartController {
     })
     @PostMapping
     public ResponseEntity<Cart> create(@RequestBody @Valid @NotNull CartDto record) {
-        return customerService.findOne(record.customer_id())
-                .map(customer -> {
-                    List<Product> products = new ArrayList<>(record.items());
-                    Cart cart = cartService.create(customer, products);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(cart);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Customer customer = customerService.findOne(record.customer_id());
+
+        List<Product> products = new ArrayList<>(record.items());
+        Cart cart = cartService.create(customer, products);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(cart);
     }
 
     @Operation(summary = "Retrieve a list of items by cart ID", method = "GET")

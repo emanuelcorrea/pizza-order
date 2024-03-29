@@ -2,6 +2,7 @@ package com.example.pizza.config;
 
 import com.example.pizza.exceptions.ExceptionResponse;
 import com.example.pizza.exceptions.category.CategoryNotFoundException;
+import com.example.pizza.exceptions.customer.CustomerNotFoundException;
 import com.example.pizza.exceptions.product.ProductNotFoundException;
 import com.example.pizza.exceptions.product.ProductsNotFoundException;
 import com.example.pizza.interfaces.CustomException;
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException.class)
     private ResponseEntity<ExceptionResponse> categoryNotFound(CategoryNotFoundException exception) {
+        return this.buildResponse(exception);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    private ResponseEntity<ExceptionResponse> customerNotFound(CustomerNotFoundException exception) {
         return this.buildResponse(exception);
     }
 
