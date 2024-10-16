@@ -1,4 +1,4 @@
-RockFoFo<p align="center">
+<p align="center">
   <p align="center"><img width="258" height="55" src="https://i.imgur.com/ksRkRFo.png" alt="logo"><p>
 
    <h2 align="center">Pizzify</h2>
